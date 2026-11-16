@@ -4,3 +4,6 @@ dist/
 
 # IDE
 .idea/
+
+# Git Bash / Cygwin crash dumps (e.g. bash.exe.stackdump)
+*.stackdump
