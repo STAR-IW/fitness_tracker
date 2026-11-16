@@ -8,7 +8,9 @@ and ask before making any decision it doesn't cover.
 ```bash
 docker compose up -d          # Postgres (host port 5433) + pgAdmin (http://localhost:5050)
 npm run dev                   # tsx watch, http://localhost:3000
-npm run typecheck             # tsc --noEmit
+npm run typecheck             # tsc on src + tests (tsconfig.test.json)
+npm test                      # Vitest + Supertest; needs Docker up. Uses DB track_fitness_test
+npm run test:watch
 npm run build && npm start    # compile to dist/ and run
 npm run db:migrate            # apply pending migrations
 npm run db:migrate:undo       # revert last one; `-- --to 0` reverts all
@@ -20,7 +22,15 @@ Seeded user ids: 1 Coach A, 2 Trainee A1 (coached by 1), 3 Trainee A2 (no coach)
 
 ## Stack
 Express 5, TypeScript (ESM, `"type": "module"`, NodeNext), Sequelize 6, Postgres 16, Umzug 3, Zod 4.
-Node >= 22. Tests (planned): Vitest + Supertest.
+Node >= 22. Tests: Vitest + Supertest.
+
+## Tests
+- `.env.test` is loaded in `vitest.config.ts`; the DB name must end in `_test` or the run refuses.
+- `tests/global-setup.ts` creates the test DB if missing and runs migrations once.
+- `tests/setup.ts` re-seeds before **every** test (`seedDatabase()` from `src/db/seed-data.ts`),
+  so tests may write freely. Files run one at a time (shared DB).
+- `tests/helpers.ts`: `api()` (Supertest on `createApp()`) and `USERS` seeded ids.
+  Authenticate with `.set("x-user-id", String(USERS.traineeA1))`.
 
 ## Layout
 - `src/server.ts` starts the app; `src/app.ts` exports `createApp()` (no `listen`, for Supertest).
