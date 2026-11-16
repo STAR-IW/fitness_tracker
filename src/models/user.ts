@@ -6,7 +6,7 @@ import {
   type InferCreationAttributes,
 } from "sequelize";
 import { sequelize } from "../db/sequelize.js";
-import { ROLES, type Role } from "./enums.js";
+import { ROLE_VALUES, type Role } from "./enums.js";
 
 export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>;
@@ -24,7 +24,7 @@ User.init(
     organizationId: { type: DataTypes.INTEGER, allowNull: false },
     name: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
-    role: { type: DataTypes.ENUM(...ROLES), allowNull: false },
+    role: { type: DataTypes.ENUM(...ROLE_VALUES), allowNull: false },
     coachId: { type: DataTypes.INTEGER, allowNull: true },
     createdAt: DataTypes.DATE,
   },

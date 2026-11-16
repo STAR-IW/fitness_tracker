@@ -6,7 +6,7 @@ import {
   type InferCreationAttributes,
 } from "sequelize";
 import { sequelize } from "../db/sequelize.js";
-import { WORKOUT_FOCUS, type WorkoutFocus } from "./enums.js";
+import { WORKOUT_FOCUS_VALUES, type WorkoutFocus } from "./enums.js";
 
 export class Workout extends Model<InferAttributes<Workout>, InferCreationAttributes<Workout>> {
   declare id: CreationOptional<number>;
@@ -22,7 +22,7 @@ Workout.init(
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     organizationId: { type: DataTypes.INTEGER, allowNull: false },
     traineeId: { type: DataTypes.INTEGER, allowNull: false },
-    focus: { type: DataTypes.ENUM(...WORKOUT_FOCUS), allowNull: false },
+    focus: { type: DataTypes.ENUM(...WORKOUT_FOCUS_VALUES), allowNull: false },
     performedAt: { type: DataTypes.DATE, allowNull: false },
     createdAt: DataTypes.DATE,
   },
