@@ -49,7 +49,10 @@ GET  /exercises                    any logged-in user, else 401
 - Identity only from auth (req.user), never from body. organizationId always from req.user.
 - Middleware order: auth → role → Zod → ownership query.
 - Role check in middleware; ownership in the DB query (where includes owner + organizationId).
-- Not logged in → 401. Wrong role → 403. Zod failure → 400. Not owner → 404.
+- Not logged in → 401. Wrong role → 403. Zod failure on the body → 400. Not owner → 404.
+- Invalid path param (e.g. `/workouts/abc/sets`) → 404: a malformed id means the resource doesn't exist.
+- Unknown body fields are ignored (stripped by Zod), not rejected. Services map fields explicitly,
+  so extra keys can never reach the DB.
 - Error shape: { error: { code, message } }
 
 ## Tests (Stage 1)

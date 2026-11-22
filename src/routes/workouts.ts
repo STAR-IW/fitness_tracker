@@ -12,14 +12,18 @@ const CreateWorkoutSchema = z.object({
     focus: z.enum(WORKOUT_FOCUS),
     performedAt: z.coerce.date(),
 });
+// Postgres INTEGER is int32; DECIMAL(6,2) holds up to 9999.99. Out-of-range values would 500 at insert.
+const PG_INT_MAX = 2147483647;
+const PgId = z.number().int().positive().max(PG_INT_MAX);
+
 const CreateSetSchema = z.object({
-    exerciseId: z.number().int().positive(),
-    setNumber: z.number().int().positive(),
-    reps: z.number().int().positive(),
-    weightKg: z.number().nonnegative(),
+    exerciseId: PgId,
+    setNumber: PgId,
+    reps: PgId,
+    weightKg: z.number().nonnegative().max(9999.99).multipleOf(0.01),
 });
 const WorkoutParamsSchema = z.object({
-    workoutId: z.coerce.number().int().positive(),
+    workoutId: z.coerce.number().int().positive().max(PG_INT_MAX),
 })
 workoutsRouter.post("/workouts", auth, requireRole("trainee"), async (req, res) => {
     const parsed = CreateWorkoutSchema.safeParse(req.body);
@@ -53,7 +57,7 @@ workoutsRouter.post("/workouts/:workoutId/sets", auth, requireRole("trainee"), a
     const result = await createSet({
         traineeId:user.id,
         organizationId:user.organizationId,
-        workoutId:Number(params.data.workoutId),
+        workoutId:params.data.workoutId,
         exerciseId:parsed.data.exerciseId,
         setNumber:parsed.data.setNumber,
         reps:parsed.data.reps,
